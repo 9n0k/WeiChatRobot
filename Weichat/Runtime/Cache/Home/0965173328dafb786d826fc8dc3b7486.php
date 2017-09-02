@@ -1,0 +1,208 @@
+<?php if (!defined('THINK_PATH')) exit();?><!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script src="https://cdn.bootcss.com/jquery/1.7.2/jquery.min.js"></script>
+		<script src="https://cdn.bootcss.com/layer/3.0.3/layer.js"></script>
+		<style>
+			*{margin: 0; padding: 0; font-family: "微软雅黑";font-size: 14px;}
+			.friend_or_qun_list ul li:hover{background: #666666;}
+		</style>
+	</head>
+	<body>
+		<div style="width: 780px; min-height: 90vh; height: auto; margin: 0 auto; background: #CCCCCC;color: #000000; padding: 10px;">
+			<div class="left" style="float: left; width: 780px; height: auto;">
+				<div class="head" style="float: left; width: 780px;margin-bottom: 10px;">
+					<div class="head_img" style="float: left; width: 80px; height: 80px; background: #993300;">
+						<img src="<?php echo ($headimgurl); ?>" style="margin: 5px; width: 70px; height: 70px;" />
+					</div>
+					<div class="user_info" style="float: left;width: 355px; margin-left: 10px; padding: 10px; height: 60px; background: #E87E04;">
+						<span>昵称：<?php echo ($nickname); ?></span>&nbsp;&nbsp;&nbsp;<span>性别:<?php echo ($sex); ?></span><br />
+						<span>好友总数：<?php echo ($membercount); ?></span><br />
+						<span>个性签名：<?php echo ($signature); ?></span>
+					</div>
+					<div style="float:left;width:95px; margin-left: 10px; height: 80px; line-height: 80px; text-align: center;">
+						同步状态:<span id="tongbu">成功</span>
+					</div>
+					<div id="login_out" style="cursor: pointer; float: right; margin-left: 10px; width: 80px; height: 80px; background: #FF0000; line-height: 80px; text-align: center;">点击退出</div>
+					<script>
+						$(document).ready(function(){
+							$('#login_out').bind('click',function(){
+								$.get('/index.php/Home/Main/login_out',{
+									'do':'login_out'
+								},function(result){
+									//alert(result);
+									if(result == 'login_out_success' ){
+										layer.msg('成功退出');
+										window.location.href="/";
+									}
+								});
+							});
+						});
+					</script>
+				</div>
+				<div class="gongneng" style="width: 100%; min-height: 140px; float: left; margin-bottom: 20px;">
+					<table border="" cellspacing="0" cellpadding="0" style="color: #000000;">
+						<tr>
+							<td>淘宝PID设置:</td>
+							<td>
+								<input id="taobaopid" name="taobaopid" type="text" style="width: 315px;" value="<?php echo ($taobaopid); ?>" />
+								<span style="color: red;">*必填项,建议更改为自己的淘宝pid</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="taobaopid_save">提交</button></td>
+						</tr>
+						<tr>
+							<td>阿里妈妈APPKEY设置:</td>
+							<td>
+								<input id="alimama_appkey" name="alimama_appkey" type="text" style="width: 315px;" value="<?php echo ($alimama_appkey); ?>" />
+								<span style="color: red;">*必填项,建议更改为自己阿里妈妈的APPKEY</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="alimama_appkey_save">提交</button></td>
+						</tr>
+						<tr>
+							<td>阿里妈妈SECRET设置:</td>
+							<td>
+								<input id="alimama_secret" name="alimama_secret" type="text" style="width: 315px;" value="<?php echo ($alimama_secret); ?>" />
+								<span style="color: red;">*必填项,建议更改为自己阿里妈妈的SECRET</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="alimama_secret_save">提交</button></td>
+						</tr>
+						<tr>
+							<td>大淘客采集地址:</td>
+							<td>
+								<input id="taobao_goods" name="taobao_goods" type="text" style="width: 315px;" value="<?php echo ($taobao_goods); ?>" />
+								<span style="color: red;">*必填项,不建议更改</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="taobao_goods_save">提交</button></td>
+						</tr>
+						<tr>
+							<td>机器人群发群名称:</td>
+							<td>
+								<input id="robot_sends" name="robot_sends" type="text" style="width: 315px;" value="<?php echo ($robot_sends); ?>" />
+								<span style="color: red;">*必填项,选择自己需要群发的群名称</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="robot_sends_save">提交</button></td>
+						</tr>
+						<tr>
+							<td>发送定时设置:</td>
+							<td>
+								<input id="robots_time" name="robots_time" type="text" style="width: 315px;" value="<?php echo ($robots_time); ?>" />
+								<span style="color: red;">*必填项,整数分钟数,不得低于5分钟</span>
+							</td>
+							<td><button style="cursor: pointer;" onclick="taobao_info_updata(this.id);" id="robots_time_save">提交</button></td>
+						</tr>
+					</table>
+				</div>
+				<div class="friend_or_qun_list" style="float: left; width: 780px; min-height: 50vh; background: #868686;">
+					<div style="width: 49.5%; float: left;">
+						<ul>
+							<?php if(is_array($friendlist)): foreach($friendlist as $key=>$vo): ?><li id="<?php echo ($key); ?>" style="padding: 2px; line-height: 60px; cursor: pointer; width: 187px; height: 60px; float: left; overflow: hidden; color: #fff; border: 1px solid #FFFFFF; list-style: none;">
+									<span style="font-weight: bold; color: #880000;">
+										昵称：<?php echo ($vo["NickName"]); ?>
+									</span>
+								</li>
+								<script>
+									$(document).ready(function(){
+										$("#<?php echo ($key); ?>").bind('click',function(){
+											layer.open({
+												  type: 2,
+												  //area: ['1000px', '500px'],
+												  area: ['500px', '215px'],
+												  title:"正在给好友[[<?php echo ($vo["NickName"]); ?>]]发送消息",
+												  skin: 'layui-layer-rim', //加上边框
+												  content: ['send_msg/username/<?php echo ($vo["UserName"]); ?>', 'no']
+											});
+										});
+										$("#<?php echo ($key); ?>").bind('mouseover',function(){
+											layer.tips('昵称:<?php echo ($vo["NickName"]); ?><br />性别：<?php if($vo["Sex"] == 1): ?>男<?php elseif($vo["Sex"] == 2): ?>女<?php else: ?>未设置<?php endif; ?><br />城市：<?php echo ($vo["Province"]); ?>-<?php echo ($vo["City"]); ?><br />个性签名：<?php echo ($vo["Signature"]); ?><br />号码类型：<?php if($vo["ContactFlag"] == 1): ?>普通好友<?php elseif($vo["ContactFlag"] == 3): ?>公共号<?php endif; ?>', '#<?php echo ($key); ?>',{tips: [1, '#000000']});
+										});
+									});
+								</script><?php endforeach; endif; ?>
+						</ul>
+					</div>
+					<div style="width: 49.5%; float: right;">
+						<ul>
+							<?php if(is_array($qunlist)): foreach($qunlist as $key=>$vo): ?><li id="<?php echo ($key); ?>" style="padding: 2px; line-height: 60px; cursor: pointer; width: 187px; height: 60px; overflow: hidden; float: left; color: #fff; border: 1px solid #FFFFFF; list-style: none;">
+									<span style="font-weight: bold; color: #880000;">昵称：<?php echo ($vo["NickName"]); ?></span>
+								</li>
+								<script>
+									$(document).ready(function(){
+										$("#<?php echo ($key); ?>").bind('click',function(){
+											layer.open({
+												  type: 2,
+												  //area: ['1000px', '500px'],
+												  area: ['500px', '215px'],
+												  title:"正在给好友-<?php echo ($vo["NickName"]); ?>-发送消息",
+												  skin: 'layui-layer-rim', //加上边框
+												  content: ['send_msg/username/<?php echo ($vo["UserName"]); ?>', 'no']
+											});
+										});
+										$("#<?php echo ($key); ?>").bind('mouseover',function(){
+											layer.tips('昵称:<?php echo ($vo["NickName"]); ?><br />性别：<?php if($vo["Sex"] == 1): ?>男<?php elseif($vo["Sex"] == 2): ?>女<?php else: ?>未设置<?php endif; ?><br />城市：<?php echo ($vo["Province"]); ?>-<?php echo ($vo["City"]); ?><br />个性签名：<?php echo ($vo["Signature"]); ?>', '#<?php echo ($key); ?>',{tips: [1, '#000000']});
+										});
+									});
+								</script><?php endforeach; endif; ?>
+						</ul>
+					</div>
+				</div>
+			</div>
+		<div style="clear: both;"></div>
+		</div>
+	</body>
+	<script>
+		setInterval(find_sync_status,20000);
+		function find_sync_status(){
+			$.post('/index.php/Home/Main/sync_status',function(result){
+				if(result == 'error' ){
+					$('#tongbu').html("失败");
+				}else{
+					$('#tongbu').html("成功");
+				}
+			});
+		}
+		
+		var time = $('#robots_time').val();
+		var set_time = time*60*1000;
+		setInterval(taobaoke,set_time);
+		function taobaoke(){$.post('/index.php/Home/Main/taobaoke');}
+
+		function taobao_info_updata(id){
+			if(id == 'taobaopid_save'){
+				var val_ue = $('#taobaopid').val();
+				info_updata(val_ue);
+			}else if(id == 'alimama_appkey_save'){
+				var val_ue = $('#alimama_appkey').val();
+				info_updata(val_ue);
+			}else if(id == 'alimama_secret_save'){
+				var val_ue = $('#alimama_secret').val();
+				info_updata(val_ue);
+			}else if(id == 'taobao_goods_save'){
+				var val_ue = $('#taobao_goods').val();
+				info_updata(val_ue);
+			}else if(id == 'robot_sends_save'){
+				var val_ue = $('#robot_sends').val();
+				info_updata(val_ue);
+			}else if(id == 'robots_time_save'){
+				var val_ue = $('#robots_time').val();
+				info_updata(val_ue);
+			}
+			function info_updata(val_ue){
+				$.post('/index.php/Home/Main/update_taobao_info',{
+					'id':id,
+					'val':val_ue
+				},function(result){
+					//alert(result);
+					if(result == 'error'){
+						layer.msg("修改失败");
+					}else{
+						var val_id = id.replace('_save','');
+						$('#'+val_id).val(val_ue);
+						layer.msg("修改成功");
+						window.location.reload();
+					}
+				});
+			}
+		}
+	</script>
+</html>

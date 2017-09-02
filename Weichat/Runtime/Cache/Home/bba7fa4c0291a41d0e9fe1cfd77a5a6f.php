@@ -1,0 +1,45 @@
+<?php if (!defined('THINK_PATH')) exit();?><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<script src="https://cdn.bootcss.com/jquery/1.7.2/jquery.min.js"></script>
+		<style>
+			*{padding: 0; margin: 0;font-family: "微软雅黑";font-size: 16px;}
+		</style>
+	</head>
+	<body>
+		<div style="width: 480px; height: 156px; padding: 10px;">
+			<textarea id="msg" value="" style="width: 470px; height: 90px; max-width: 470px; max-height: 90px; line-height: 20px;padding: 5px;"></textarea>
+			<span id="note_msg" style="color: #E87E04; width: 200px; height: 50px; line-height: 50px;  float: left;"></span>
+			<button id="send_msg_bt" style="float: right; width: 80px; height: 50px;">发送</button>
+		</div>
+		<script>
+			$(document).ready(function(){
+				$('#send_msg_bt').bind('click',function(){
+					var msg = $('#msg').val();
+					var username = '<?php echo ($to_username); ?>';
+					if(msg == ""){
+						$('#note_msg').html('消息不能为空');
+					}else{
+						$.post('/index.php/Home/Main/send_msg_do',{
+							'msg':msg,
+							'username':username
+						},function(result){
+							if(result == 'success'){
+								$('#note_msg').html('消息发送成功');
+								$('#msg').val("");
+							}else{
+								$('#note_msg').html('消息发送失败，请稍后再试');
+							}
+						});
+					}
+
+					
+				});
+			});
+		</script>
+		<div style="clear: both;"></div>
+	</body>
+</html>
